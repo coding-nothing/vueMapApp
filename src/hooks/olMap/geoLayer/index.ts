@@ -1,4 +1,4 @@
-import { Group, Vector } from "ol/layer"
+import { Group, Vector as VectorLayer } from "ol/layer"
 import { Vector as VectorSource } from 'ol/source';
 import GeoJSON from 'ol/format/GeoJSON.js';
 import { Style, Text, Fill, Stroke } from "ol/style";
@@ -29,7 +29,7 @@ const createLayerStyle = (feature: any) => {
 }
 
 const CreateLayer = (url: string) => {
-    const layer = new Vector({
+    const layer = new VectorLayer({
         source: new VectorSource({
             url,
             format: new GeoJSON(),
@@ -49,7 +49,7 @@ enum LayerIndex {
 
 interface LayerMapItem {
     name: string,
-    layer: Vector<any>
+    layer: VectorLayer<any>
 }
 
 
@@ -112,7 +112,7 @@ class GeoLayer {
     #addLayerCache(
         type: LayerIndex,
         name: string,
-        layer: Vector<any>
+        layer: VectorLayer<any>
     ) {
         if (type > LayerIndex.First) {
             layer.setVisible(false);
@@ -145,7 +145,7 @@ class GeoLayer {
 
     createProvinceGeoLayer(map: OlMap) {
         for (const key in ALL_EXTENT) {
-            const layer = new Vector({
+            const layer = new VectorLayer({
                 source: new VectorSource({
                     url: `/geojson/china/${key}.json`,
                     format: new GeoJSON(),
