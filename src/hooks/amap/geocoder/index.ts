@@ -13,10 +13,9 @@ class Geocoder {
             extension: 'all'
         });
     }
-    async getAddress(lnglat: Lnglat|Coordinate) {
+    async getAddress(lnglat4326: Lnglat|Coordinate) {
         return new Promise((resolve, reject) => {
-          // const coordinate4326 = transform(lnglat, EPSG3857, EPSG4326)
-          this.geocoder.getAddress(lnglat, (status:string, result:any) => {
+          this.geocoder.getAddress(lnglat4326, (status:string, result:any) => {
             if (status === 'complete' && result.info === 'OK') {
               resolve(result.regeocode.formattedAddress);
             } else {

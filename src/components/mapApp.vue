@@ -1,26 +1,30 @@
 <script lang="ts" setup>
-import { computed, onMounted, reactive } from 'vue'
+import { computed, onMounted, reactive } from "vue";
 // import { ElMessage } from 'element-plus'
-import AMapMap from '@/hooks/amap'
-import AMapDriving from '@/hooks/amap/driving'
-import Geocoder from '@/hooks/amap/geocoder'
+import AMapMap from "@/hooks/amap";
+import AMapDriving from "@/hooks/amap/driving";
+import Geocoder from "@/hooks/amap/geocoder";
 
 const props = defineProps({
-    autoDrivingRoute: { // 是否添加轨迹
-        type: Boolean,
-        default: false
-    },
-    dragRoute: { // 是否可拖拽
-        type: Boolean,
-        default: false
-    }
-})
+  autoDrivingRoute: {
+    // 是否添加轨迹
+    type: Boolean,
+    default: false,
+  },
+  dragRoute: {
+    // 是否可拖拽
+    type: Boolean,
+    default: false,
+  },
+});
 
 // 标记点信息：坐标 地址
-const markerInfos = reactive<MarkerInfo[]>(<any>[])
+const markerInfos = reactive<MarkerInfo[]>(<any>[]);
 
 // 是否支持生成简单轨迹
-const enableSmpRoute = computed<boolean>(() => props.autoDrivingRoute && markerInfos.length === 2)
+const enableSmpRoute = computed<boolean>(
+  () => props.autoDrivingRoute && markerInfos.length === 2
+);
 // 是否支持生成可拖拽轨迹
 // const enableDragRoute = computed<boolean>(() => props.autoDrivingRoute && props.dragRoute && markerInfos.length === 2)
 // 是否删除上一个标记
@@ -29,8 +33,7 @@ const enableSmpRoute = computed<boolean>(() => props.autoDrivingRoute && markerI
 // const enableRoute = computed<boolean>(() => enableSmpRoute.value || enableDragRoute.value)
 
 // 地理编码服务
-const geocoder = new Geocoder()
-
+const geocoder = new Geocoder();
 
 // 拖拽
 // let drag: any = null
@@ -56,86 +59,81 @@ const geocoder = new Geocoder()
 //     }
 // }
 const getAddress = (lnglat: Lnglat) => {
-    return new Promise(resolve => {
-        geocoder.getAddress(lnglat).then((address) => {
-            resolve(address)
-        })
-    })
-}
+  return new Promise((resolve) => {
+    geocoder.getAddress(lnglat).then((address) => {
+      resolve(address);
+    });
+  });
+};
 
 const addDrivingRoute = (driving: AMapDriving) => {
-    const routePoints = markerInfos.map(markerInfo => markerInfo.lnglat)
-    driving.setRoute(routePoints)
-}
+  const routePoints = markerInfos.map((markerInfo) => markerInfo.lnglat);
+  driving.setRoute(routePoints);
+};
 
 const addMarker = (map: AMapMap, lnglat: Lnglat) => {
-    markerInfos.shift()
-    map.removeMarker()
-    map.setMarker(lnglat)
-}
+  markerInfos.shift();
+  map.removeMarker();
+  map.setMarker(lnglat);
+};
 onMounted(() => {
-    // 地图
-    const map: AMapMap = new AMapMap('map-container')
-    // 驾车服务
-    const driving: AMapDriving = new AMapDriving(map)
-    map.initMapListener(
-        'click',
-        (e: any) => {
-            let lnglat: Lnglat = [e.lnglat.getLng(), e.lnglat.getLat()]
-            getAddress(lnglat).then((address) => {
-                markerInfos.push({
-                    lnglat,
-                    addressDscb: `${address}`
-                })
-                if (enableSmpRoute) {
-                    addDrivingRoute(driving)
-                } else {
-                    addMarker(map, lnglat)
-                }
-            })
-
-        }
-    )
-})
+  // 地图
+  const map: AMapMap = new AMapMap("map-container");
+  // 驾车服务
+  const driving: AMapDriving = new AMapDriving(map);
+  map.initMapListener("click", (e: any) => {
+    let lnglat: Lnglat = [e.lnglat.getLng(), e.lnglat.getLat()];
+    if (enableSmpRoute.value) {
+      addDrivingRoute(driving);
+    } else {
+      addMarker(map, lnglat);
+    }
+    getAddress(lnglat).then((address) => {
+      markerInfos.push({
+        lnglat,
+        addressDscb: `${address}`,
+      });
+    });
+  });
+});
 </script>
 <template>
-    <div class="map-app">
-        <div class="map-container" id="map-container"></div>
-        <div class="map-info-container">
-            <div class="location-container">
-                <template v-for="item in markerInfos">
-                    <p>{{ item.lnglat }}</p>
-                    <p>{{ item.addressDscb }}</p>
-                </template>
-            </div>
-            <div class="router-container">
-                <div id="panel"></div>
-            </div>
-        </div>
+  <div class="map-app">
+    <div class="map-container" id="map-container"></div>
+    <div class="map-info-container">
+      <div class="location-container">
+        <template v-for="item in markerInfos">
+          <p>{{ item.lnglat }}</p>
+          <p>{{ item.addressDscb }}</p>
+        </template>
+      </div>
     </div>
+  </div>
 </template>
-
 
 <style lang="scss" scoped>
 .map-app {
-    width: 100%;
+  width: 100%;
+  height: 100%;
+  display: flex;
+
+  .map-info-container {
+    width: 200px;
     height: 100%;
-    display: flex;
+  }
 
-    .map-info-container {
-        width: 200px;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-
-        .location-container,
-        .router-container {
-            max-height: 50%;
-        }
-    }
-
-    .map-container {
-        flex: 1;
-        height: 100%;
-    }
-}</style>
+  .map-container {
+    flex: 1;
+    height: 100%;
+  }
+}
+</style>
+<style>
+.amap-icon {
+  left: -12px;
+  top: -24px;
+  img {
+    left: -4px;
+  }
+}
+</style>

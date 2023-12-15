@@ -9,7 +9,7 @@ import { HANGZHOU_POINT } from '../../config/mapConfig'
 class AMapMap {
   map: any
   eventListener: Map<string, Array<Function>>
-  markers: any
+  markers: Array<any>
   markerLnglats: Array<Lnglat>
   /**
    * Creates an instance of AMapMap.
@@ -18,6 +18,7 @@ class AMapMap {
    */
   constructor(container:string) {
     this.markerLnglats = []
+    this.markers = []
     this.map = new AMap.Map(container, {
       viewMode: '2D',
       resizeEnable: true,
@@ -78,13 +79,14 @@ class AMapMap {
   setMarker(lnglat: Lnglat) {
     const marker = new AMap.Marker({
       position: lnglat,
+      icon: '/public/images/marker.svg'
     })
+    marker.setMap(this.map)
     this.markers.push(marker)
 
     const markerLnglat = new AMap.LngLat(...lnglat)
     this.markerLnglats.push(markerLnglat)
-
-    this.map.add(marker)
+    // this.map.add(marker)
   }
 
   /**
@@ -93,7 +95,7 @@ class AMapMap {
    * @memberof AMapMap
    */
   removeMarker() {
-    this.map.remove(this.markers.shift())
+    this.markers.lenggth && this.map.remove(this.markers.shift())
     this.markerLnglats.shift()
 
   }

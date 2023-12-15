@@ -18,6 +18,7 @@
     "ol": "^8.2.0",
     "ol-contextmenu": "^5.3.0",
     "ol-ext": "^4.0.13",
+    "prettier": "^3.1.0",
     "sass": "^1.69.5",
     "sass-loader": "^13.3.2",
     "volar": "^0.0.2",
