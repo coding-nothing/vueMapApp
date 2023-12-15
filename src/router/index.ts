@@ -34,6 +34,11 @@ const router = createRouter({
                     path: '/olofflinemap',
                     name: 'OlOfflineMap',
                     component: () => import('@/view/olOfflineMap.vue')
+                },
+                {
+                    path: '/olvuemap',
+                    name: 'OlvueMap',
+                    component: () => import('@/view/olvueSmpMap.vue')
                 }
             ]
         }

@@ -16,11 +16,14 @@
     "element-plus": "^2.4.3",
     "node": "^21.2.0",
     "ol": "^8.2.0",
+    "ol-contextmenu": "^5.3.0",
+    "ol-ext": "^4.0.13",
     "sass": "^1.69.5",
     "sass-loader": "^13.3.2",
     "volar": "^0.0.2",
     "vue": "^3.3.8",
-    "vue-router": "^4.2.5"
+    "vue-router": "^4.2.5",
+    "vue3-openlayers": "^3.2.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.5.0",

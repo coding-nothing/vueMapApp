@@ -40,6 +40,10 @@ watchEffect(() => {
           <el-icon><setting  /></el-icon>
           <span class="menu-label">openlayers 离线地图：GeoJSON</span>
         </el-menu-item>
+        <el-menu-item index="/olvuemap">
+          <el-icon><setting  /></el-icon>
+          <span class="menu-label">olVue3组件库 简单地图</span>
+        </el-menu-item>
       </el-menu>
     </div>
     <div class="main">

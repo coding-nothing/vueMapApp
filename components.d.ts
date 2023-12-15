@@ -14,6 +14,7 @@ declare module 'vue' {
     MapApp: typeof import('./src/components/mapApp.vue')['default']
     MarkerInfoPop: typeof import('./src/components/markerInfoPop.vue')['default']
     OlMapApp: typeof import('./src/components/olMapApp.vue')['default']
+    OlvueMapApp: typeof import('./src/components/olvueMapApp.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
