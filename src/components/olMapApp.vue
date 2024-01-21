@@ -17,6 +17,14 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  autoDrivingRoute: {
+    type: Boolean,
+    default: true,
+  },
+  showBorder: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 // 在线/离线地图
@@ -47,6 +55,7 @@ const getAddress = (coordinate: Lnglat | Coordinate) => {
 
 onMounted(() => {
   const map = new OLMap(mapApp.value, useOnlineMapRef.value);
+  props.showBorder && map.setBorderView();
   const markerLayer = new MarkerLayer();
   const hoverInter = new SelectInteraction([markerLayer.layer]);
 
@@ -130,5 +139,7 @@ onMounted(() => {
   height: 20px;
   font-size: 14px;
   bottom: 3px;
+  background: rgba(80, 80, 80, 0.7);
+  color: white;
 }
 </style>
