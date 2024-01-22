@@ -16,7 +16,8 @@ const createLayerStyle = (feature: any) => {
   // });
 
   const stroke = new Stroke({
-    color: feature.get("name") === "China" ? "transparent" : "red",
+    // color: feature.get("name") === "China" ? "transparent" : "red",
+    color: "red",
     width: 2,
   });
 
@@ -66,43 +67,52 @@ class GeoLayer {
   #initGeoViewListener(map: OlMap) {
     map.getView().on("change", (event) => {
       const zoom = event.target.getZoom(); // 获取新的缩放级别
+      console.log("zoom", zoom);
       const mapView = event.target;
       // 用地图的DOM宽高计算当前视图对应的地理经纬度范围
       const currentExtent = mapView.calculateExtent(map.getSize());
-      // 稳妥起见 再次转换为EPSG4326
       const transformedExtent = transformExtent(
         currentExtent,
         mapView.getProjection(),
         EPSG4326
       );
+      if (zoom >= LayerIndex.Second) {
+        // 加载省份
+        for (const key in ALL_EXTENT) {
+          const extent = ALL_EXTENT[key];
+          // 加载视图所在的省份贴图
+          const isCityInView = intersects(extent, transformedExtent);
+          const layerCache = this.layerCacheMap[LayerIndex.Second][key];
+          if (!layerCache || !layerCache.layer) continue;
 
-      for (const _index in this.layerCacheMap) {
-        const index = parseInt(_index, 10) as LayerIndex;
-        if (index <= LayerIndex.First) continue;
-
-        if (zoom > index) {
-          for (const key in ALL_EXTENT) {
-            const extent = ALL_EXTENT[key];
-            // 加载视图所在的省份贴图
-            const isCityInView = intersects(extent, transformedExtent);
-            const layerCache = this.layerCacheMap[index][key];
-            if (!layerCache || !layerCache.layer) continue;
-
-            const layer = layerCache.layer;
-            if (isCityInView) {
-              if (!layer.getVisible()) layer.setVisible(true);
-            } else {
-              // 切走的省份贴图不展示
-              layer.setVisible(false);
-            }
+          const layer = layerCache.layer;
+          if (isCityInView) {
+            if (!layer.getVisible()) layer.setVisible(true);
+          } else {
+            // 切走的省份贴图不展示
+            layer.setVisible(false);
           }
-        } else {
-          // 缩小后关闭省份贴图
-          for (const key in ALL_EXTENT) {
-            const layerCache = this.layerCacheMap[index][key];
-            if (layerCache && layerCache.layer)
-              layerCache.layer.setVisible(false);
-          }
+        }
+        // 关闭国家
+        for (const name in this.layerCacheMap[LayerIndex.First]) {
+          this.layerCacheMap[LayerIndex.First][name].layer.setVisible(false);
+        }
+        for (const name in this.layerCacheMap[LayerIndex.Zero]) {
+          this.layerCacheMap[LayerIndex.Zero][name].layer.setVisible(false);
+        }
+      } else {
+        // 关闭省份
+        for (const key in ALL_EXTENT) {
+          const layerCache = this.layerCacheMap[LayerIndex.Second][key];
+          if (layerCache && layerCache.layer)
+            layerCache.layer.setVisible(false);
+        }
+        // 加载国家
+        for (const name in this.layerCacheMap[LayerIndex.First]) {
+          this.layerCacheMap[LayerIndex.First][name].layer.setVisible(true);
+        }
+        for (const name in this.layerCacheMap[LayerIndex.Zero]) {
+          this.layerCacheMap[LayerIndex.Zero][name].layer.setVisible(true);
         }
       }
     });

@@ -7,6 +7,7 @@ import MarkerLayer from "@/hooks/olMap/marker";
 import SelectInteraction from "@/hooks/olMap/select";
 import { SelectEvent } from "ol/interaction/Select";
 import { Coordinate } from "ol/coordinate";
+import { GeoJSON } from "ol/format";
 
 const props = defineProps({
   useOnlineMap: {
@@ -25,13 +26,20 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  batchAddMarker: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 // 在线/离线地图
 const useOnlineMapRef = computed<Boolean>(() => props.useOnlineMap);
 // 坐标信息pop/坐标信息固定左下角
 const useMarkerPopRef = computed<Boolean>(() => props.useMarkerPop);
-
+// 地图实例
+let map: OLMap;
+// 点位图层
+let markerLayer: MarkerLayer;
 // 地理编码服务
 const geocoder = new Geocoder();
 // map容器引用
@@ -54,9 +62,9 @@ const getAddress = (coordinate: Lnglat | Coordinate) => {
 };
 
 onMounted(() => {
-  const map = new OLMap(mapApp.value, useOnlineMapRef.value);
+  map = new OLMap(mapApp.value, useOnlineMapRef.value);
   props.showBorder && map.setBorderView();
-  const markerLayer = new MarkerLayer();
+  markerLayer = new MarkerLayer();
   const hoverInter = new SelectInteraction([markerLayer.layer]);
 
   map.addLayer(markerLayer.layer);
@@ -88,6 +96,61 @@ onMounted(() => {
       map.setPointer("default");
     }
   });
+});
+// 随机生成中心点周围2w个点位
+const createCircularPosition = () => {
+  const center = HANGZHOU_POINT;
+  const circularManyPosition = [];
+  for (let i = 0; i < 20000; i++) {
+    // 生成随机半径在-20到20之间
+    const radius = Math.random() * 40 - 20;
+    // 生成随机角度
+    const angle = Math.random() * 2 * Math.PI;
+    // 计算新点的坐标
+    const newX = center[0] + radius * Math.cos(angle);
+    const newY = center[1] + radius * Math.sin(angle);
+    // 将新点添加到数组
+    circularManyPosition.push([newX, newY]);
+  }
+  return circularManyPosition;
+};
+const transGeoJson = (pointList: Array<Coordinate>) => {
+  const monitorGeoJSON: any = {
+    type: "FeatureCollection",
+    features: [],
+  };
+  // 根据positions中的坐标数据，添加到JSON的features数组里面
+  for (let i = 0; i < pointList.length; i++) {
+    monitorGeoJSON.features.push({
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: pointList[i],
+      },
+      properties: {
+        name: "监控点",
+        description: "这是一个监控点位",
+        fromLayerID: "geoJSONLayer",
+        custom: {
+          id: Math.ceil(Math.random() * 99999),
+        },
+      },
+    });
+  }
+  return monitorGeoJSON as GeoJSON;
+};
+// 批量打点 点位聚合到一个图层上
+const batchAddRandomMakr = () => {
+  const pointList = createCircularPosition();
+  markerLayer.batchAddMarker(pointList);
+};
+const batchAddGeoJsonMarkr = () => {
+  const pointList = transGeoJson(createCircularPosition());
+  markerLayer.batchAddGeoJsonMarkr(pointList);
+};
+defineExpose({
+  batchAddRandomMakr,
+  batchAddGeoJsonMarkr,
 });
 </script>
 <template>

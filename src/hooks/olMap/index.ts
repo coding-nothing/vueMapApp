@@ -66,7 +66,7 @@ class OLMap {
       new TileLayer({
         source: new XYZ({
           tileUrlFunction: (coordinate) =>
-            "http://localhost:3000/" +
+            "http://192.168.5.48:3000/" +
             coordinate[0] +
             "/" +
             coordinate[1] +
@@ -141,6 +141,15 @@ class OLMap {
    */
   addLayer(layer: BaseLayer) {
     this.map.addLayer(layer);
+  }
+  /**
+   *移除图层
+   *
+   * @param {BaseLayer} layer
+   * @memberof OLMap
+   */
+  removeLayer(layer: BaseLayer) {
+    this.map.removeLayer(layer);
   }
   /**
    *添加交互
