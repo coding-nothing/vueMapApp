@@ -5,16 +5,12 @@ const olMapAppRef = ref();
 const batchMark = () => {
   olMapAppRef.value && olMapAppRef.value.batchAddRandomMakr();
 };
-const batchMarkGeoJson = () => {
-  olMapAppRef.value && olMapAppRef.value.batchAddGeoJsonMarkr();
-};
 </script>
 
 <template>
   <div class="map-cpnt-container">
     <div class="map-btn">
       <button @click="batchMark">批量打点</button>
-      <button @click="batchMarkGeoJson">批量打点geojson</button>
     </div>
     <div class="ol-simple-map">
       <olMapApp

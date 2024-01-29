@@ -3,7 +3,7 @@ import { computed, onMounted, reactive } from "vue";
 // import { ElMessage } from 'element-plus'
 import AMapMap from "@/hooks/amap";
 import AMapDriving from "@/hooks/amap/driving";
-import Geocoder from "@/hooks/amap/geocoder";
+// import Geocoder from "@/hooks/amap/geocoder";
 
 const props = defineProps({
   autoDrivingRoute: {
@@ -33,7 +33,7 @@ const enableSmpRoute = computed<boolean>(
 // const enableRoute = computed<boolean>(() => enableSmpRoute.value || enableDragRoute.value)
 
 // 地理编码服务
-const geocoder = new Geocoder();
+// const geocoder = new Geocoder();
 
 // 拖拽
 // let drag: any = null
@@ -58,13 +58,13 @@ const geocoder = new Geocoder();
 //         }
 //     }
 // }
-const getAddress = (lnglat: Lnglat) => {
-  return new Promise((resolve) => {
-    geocoder.getAddress(lnglat).then((address) => {
-      resolve(address);
-    });
-  });
-};
+// const getAddress = (lnglat: Lnglat) => {
+//   return new Promise((resolve) => {
+//     geocoder.getAddress(lnglat).then((address) => {
+//       resolve(address);
+//     });
+//   });
+// };
 
 const addDrivingRoute = (driving: AMapDriving) => {
   const routePoints = markerInfos.map((markerInfo) => markerInfo.lnglat);
@@ -88,12 +88,12 @@ onMounted(() => {
     } else {
       addMarker(map, lnglat);
     }
-    getAddress(lnglat).then((address) => {
-      markerInfos.push({
-        lnglat,
-        addressDscb: `${address}`,
-      });
-    });
+    // getAddress(lnglat).then((address) => {
+    //   markerInfos.push({
+    //     lnglat,
+    //     addressDscb: `${address}`,
+    //   });
+    // });
   });
 });
 </script>

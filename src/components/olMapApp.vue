@@ -1,13 +1,15 @@
 <script lang="ts" setup>
 import { ref, onMounted, computed } from "vue";
-import { HANGZHOU_POINT, HANGZHOU_ADDR, EPSG4326 } from "../config/mapConfig";
+import { HANGZHOU_POINT, HANGZHOU_ADDR } from "../config/mapConfig";
 import OLMap from "@/hooks/olMap/index";
-import Geocoder from "@/hooks/amap/geocoder";
+import Drag from "@/hooks/olMap/dragBox";
+// import Geocoder from "@/hooks/amap/geocoder";
 import MarkerLayer from "@/hooks/olMap/marker";
 import SelectInteraction from "@/hooks/olMap/select";
 import { SelectEvent } from "ol/interaction/Select";
-import { Coordinate } from "ol/coordinate";
-import { GeoJSON } from "ol/format";
+// import { Coordinate } from "ol/coordinate";
+import VectorLayer from "ol/layer/Vector";
+// import { GeoJSON } from "ol/format";
 
 const props = defineProps({
   useOnlineMap: {
@@ -41,7 +43,9 @@ let map: OLMap;
 // 点位图层
 let markerLayer: MarkerLayer;
 // 地理编码服务
-const geocoder = new Geocoder();
+// const geocoder = new Geocoder();
+// 框选实例
+let dragBox: Drag;
 // map容器引用
 const mapApp = ref(<HTMLElement>{});
 // 标记点信息容器引用
@@ -53,13 +57,13 @@ let curMarkerAddr = ref(HANGZHOU_ADDR);
 // 查询地址时展示查询中
 let isLoading = ref(false);
 
-const getAddress = (coordinate: Lnglat | Coordinate) => {
-  return new Promise((resolve) => {
-    geocoder.getAddress(coordinate).then((address) => {
-      resolve(address);
-    });
-  });
-};
+// const getAddress = (coordinate: Lnglat | Coordinate) => {
+//   return new Promise((resolve) => {
+//     geocoder.getAddress(coordinate).then((address) => {
+//       resolve(address);
+//     });
+//   });
+// };
 
 onMounted(() => {
   map = new OLMap(mapApp.value, useOnlineMapRef.value);
@@ -67,7 +71,7 @@ onMounted(() => {
   markerLayer = new MarkerLayer();
   const hoverInter = new SelectInteraction([markerLayer.layer]);
 
-  map.addLayer(markerLayer.layer);
+  map.addLayer(markerLayer.layer as VectorLayer<any>);
 
   map.addInter(hoverInter.selection);
 
@@ -78,12 +82,12 @@ onMounted(() => {
       markerInfoApp.value.style.display = "block";
       map.addOverlay(markerInfoApp.value, event.coordinate as Lnglat);
     }
-    const coordinate4326 = map.tranfromCoordinate(event.coordinate, EPSG4326);
-    getAddress(coordinate4326).then((address) => {
-      curMarker.value = event.coordinate;
-      curMarkerAddr.value = address as string;
-      isLoading.value = false;
-    });
+    // const coordinate4326 = map.tranfromCoordinate(event.coordinate, EPSG4326);
+    // getAddress(coordinate4326).then((address) => {
+    //   curMarker.value = event.coordinate;
+    //   curMarkerAddr.value = address as string;
+    //   isLoading.value = false;
+    // });
   });
 
   hoverInter.initInteraction((event: SelectEvent) => {
@@ -114,43 +118,15 @@ const createCircularPosition = () => {
   }
   return circularManyPosition;
 };
-const transGeoJson = (pointList: Array<Coordinate>) => {
-  const monitorGeoJSON: any = {
-    type: "FeatureCollection",
-    features: [],
-  };
-  // 根据positions中的坐标数据，添加到JSON的features数组里面
-  for (let i = 0; i < pointList.length; i++) {
-    monitorGeoJSON.features.push({
-      type: "Feature",
-      geometry: {
-        type: "Point",
-        coordinates: pointList[i],
-      },
-      properties: {
-        name: "监控点",
-        description: "这是一个监控点位",
-        fromLayerID: "geoJSONLayer",
-        custom: {
-          id: Math.ceil(Math.random() * 99999),
-        },
-      },
-    });
-  }
-  return monitorGeoJSON as GeoJSON;
-};
 // 批量打点 点位聚合到一个图层上
 const batchAddRandomMakr = () => {
   const pointList = createCircularPosition();
   markerLayer.batchAddMarker(pointList);
-};
-const batchAddGeoJsonMarkr = () => {
-  const pointList = transGeoJson(createCircularPosition());
-  markerLayer.batchAddGeoJsonMarkr(pointList);
+  map.addLayer(markerLayer.layer as VectorLayer<any>);
+  dragBox = new Drag(map.map);
 };
 defineExpose({
   batchAddRandomMakr,
-  batchAddGeoJsonMarkr,
 });
 </script>
 <template>
