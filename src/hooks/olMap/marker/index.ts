@@ -16,11 +16,11 @@ import CircleStyle from "ol/style/Circle";
 class MarkerLayer {
   layer: VectorLayer<any> | undefined;
   #markers: Array<Feature>;
-  constructor() {
+  constructor(layerID: string = "vectorLayer") {
     this.layer = new VectorLayer({
       source: new VectorSource(),
       properties: {
-        layerID: "vectorLayer",
+        layerID,
       },
     });
     this.#markers = [];
@@ -36,6 +36,13 @@ class MarkerLayer {
     return new Style({
       image: new Icon({
         src: "/public/images/marker.svg",
+      }),
+    });
+  }
+  setImage(imgUrl: string) {
+    return new Style({
+      image: new Icon({
+        src: imgUrl,
       }),
     });
   }
@@ -59,12 +66,13 @@ class MarkerLayer {
    *附带默认样式与icon
    *每次添加标记都清空图层上所有source
    * @param {Lnglat} coordinate 标记点经纬度 4326
+   * @param {string} imgUrl 标记点icon资源绝对路径
    * @memberof MarkerLayer
    */
-  addMarker(coordinate: Lnglat) {
-    const marker = new Feature(new Point(coordinate));
+  addMarker(coordinate: Lnglat, markerID: string, imgUrl: string = "") {
+    const marker = new Feature({ geometry: new Point(coordinate), markerID });
     // 设置标记要素的样式
-    marker.setStyle(this.getStyle());
+    marker.setStyle(imgUrl ? this.setImage(imgUrl) : this.getStyle());
     this.#markers.push(marker);
     this.layer?.getSource()?.clear();
     this.layer?.getSource()?.addFeature(marker);

@@ -7,12 +7,15 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    ElButton: typeof import('element-plus/es')['ElButton']
     ElIcon: typeof import('element-plus/es')['ElIcon']
     ElMenu: typeof import('element-plus/es')['ElMenu']
     ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     MapApp: typeof import('./src/components/mapApp.vue')['default']
     MarkerInfoPop: typeof import('./src/components/markerInfoPop.vue')['default']
+    OlGeneralMap: (typeof import("./src/components/olGeneralMapApp.vue"))["default"]
+    OlGeneralMapApp: typeof import('./src/components/olGeneralMapApp.vue')['default']
     OlMapApp: typeof import('./src/components/olMapApp.vue')['default']
     OlvueMapApp: typeof import('./src/components/olvueMapApp.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

@@ -26,5 +26,7 @@ export default defineConfig({
     hmr: {
       overlay: true,
     },
+    port: 5173,
+    host: true,
   },
 });

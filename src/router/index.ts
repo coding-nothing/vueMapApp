@@ -45,6 +45,11 @@ const router = createRouter({
           name: "olBorderMap.vue",
           component: () => import("@/view/olBorderMap.vue"),
         },
+        {
+          path: "/olgeneralmap",
+          name: "olGeneralMap.vue",
+          component: () => import("@/view/olGeneralMap.vue"),
+        },
       ],
     },
   ],

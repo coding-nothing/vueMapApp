@@ -44,7 +44,8 @@ class OLMap {
       new View({
         center: MAP_DEFAULT_OPTIONS.center,
         constrainResolution: true,
-        zoom: 11,
+        maxZoom: 18,
+        minZoom: 3,
         projection: EPSG4326,
       })
     );
@@ -55,7 +56,7 @@ class OLMap {
       new View({
         center: MAP_DEFAULT_OPTIONS.center,
         constrainResolution: true,
-        maxZoom: 16,
+        maxZoom: 18,
         minZoom: 3,
         // zoomFactor: 1.0,
         zoom: 11,
@@ -66,7 +67,7 @@ class OLMap {
       new TileLayer({
         source: new XYZ({
           tileUrlFunction: (coordinate) =>
-            "http://192.168.5.48:3000/" +
+            "http://192.168.1.175:3000/" +
             coordinate[0] +
             "/" +
             coordinate[1] +

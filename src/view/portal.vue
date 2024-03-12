@@ -27,17 +27,21 @@ watchEffect(() => {
           <el-icon><setting /></el-icon>
           <span class="menu-label">可拖拽地图轨迹</span>
         </el-menu-item>
-        <el-menu-item index="/olsmpmap">
-          <el-icon><setting /></el-icon>
-          <span class="menu-label">openlayers 简单地图</span>
-        </el-menu-item>
         <el-menu-item index="/olofflinemap">
           <el-icon><setting /></el-icon>
-          <span class="menu-label">openlayers 离线地图</span>
+          <span class="menu-label">离线瓦片</span>
+        </el-menu-item>
+        <el-menu-item index="/olsmpmap">
+          <el-icon><setting /></el-icon>
+          <span class="menu-label">离线瓦片打点聚合</span>
         </el-menu-item>
         <el-menu-item index="/olbordermap">
           <el-icon><setting /></el-icon>
-          <span class="menu-label">openlayers 边框地图</span>
+          <span class="menu-label">geojson边框地图</span>
+        </el-menu-item>
+        <el-menu-item index="/olgeneralmap">
+          <el-icon><setting /></el-icon>
+          <span class="menu-label">点位拖拽热区绘制</span>
         </el-menu-item>
       </el-menu>
     </div>
@@ -52,7 +56,6 @@ watchEffect(() => {
 </template>
 
 <style lang="scss" scoped>
-/* 在这里添加样式 */
 .container {
   width: 100vw;
   height: 100vh;

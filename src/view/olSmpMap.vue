@@ -15,7 +15,7 @@ const batchMark = () => {
     <div class="ol-simple-map">
       <olMapApp
         ref="olMapAppRef"
-        :useOnlineMap="true"
+        :useOnlineMap="false"
         :batchAddMarker="true"
       ></olMapApp>
     </div>
