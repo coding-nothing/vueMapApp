@@ -1,4 +1,4 @@
-import { Map as OlMap, Overlay, View } from "ol";
+import { Feature, Map as OlMap, Overlay, View } from "ol";
 import { EPSG4326, MAP_DEFAULT_OPTIONS } from "@/config/mapConfig";
 import Select from "ol/interaction/Select";
 import { transform, transformExtent } from "ol/proj";
@@ -8,6 +8,11 @@ import { XYZ } from "ol/source";
 import TileLayer from "ol/layer/Tile";
 import { EventTypes } from "ol/Observable";
 import { Group } from "ol/layer";
+import { Vector as VectorSource } from "ol/source";
+
+// import { DragAndDrop, defaults as defaultInteractions } from "ol/interaction";
+// import { GeoJSON } from "ol/format";
+import VectorImageLayer from "ol/layer/VectorImage";
 /**
  *openLayers地图服务 使用GeoJson创建
  *默认添加标记点图层
@@ -21,10 +26,26 @@ class OLMap {
   constructor(elementRef: HTMLElement, isOnlineMap: Boolean = true) {
     this.geoLayerMng = new GeoLayer();
     this.eventListener = new Map();
+    // const dragAndDropInteraction = new DragAndDrop({
+    //   formatConstructors: [GeoJSON],
+    // });
     this.map = new OlMap({
+      // interactions: defaultInteractions().extend([dragAndDropInteraction]),
       target: elementRef,
       layers: [],
     });
+    // dragAndDropInteraction.on("addfeatures", (event) => {
+    //   console.log("drag feature");
+    //   const vectorSource = new VectorSource({
+    //     features: event.features as Feature[],
+    //   });
+    //   this.map.addLayer(
+    //     new VectorImageLayer({
+    //       source: vectorSource,
+    //     })
+    //   );
+    //   this.map.getView().fit(vectorSource.getExtent());
+    // });
     this.#setupMap(isOnlineMap);
   }
   // 使用高德在线瓦片

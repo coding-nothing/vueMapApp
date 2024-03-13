@@ -8,6 +8,7 @@ import { Vector as VectorSource } from "ol/source";
 import { Style, Icon, Text, Fill, Stroke } from "ol/style";
 import { Cluster } from "ol/source";
 import CircleStyle from "ol/style/Circle";
+import { MarkerIconMap } from "@/data/marker.ts";
 /**
  *创建标记点图层
  *提供图层内标记点管理功能
@@ -15,7 +16,7 @@ import CircleStyle from "ol/style/Circle";
  */
 class MarkerLayer {
   layer: VectorLayer<any> | undefined;
-  #markers: Array<Feature>;
+  markerList: Array<Feature>;
   constructor(layerID: string = "vectorLayer") {
     this.layer = new VectorLayer({
       source: new VectorSource(),
@@ -23,7 +24,7 @@ class MarkerLayer {
         layerID,
       },
     });
-    this.#markers = [];
+    this.markerList = [];
   }
   /**
    *生成feature样式 显示聚合数量
@@ -63,19 +64,62 @@ class MarkerLayer {
   }
   /**
    *添加标记点到图层
-   *附带默认样式与icon
-   *每次添加标记都清空图层上所有source
-   * @param {Lnglat} coordinate 标记点经纬度 4326
-   * @param {string} imgUrl 标记点icon资源绝对路径
+   * @param {Coordinate} coordinate
+   * @param {MarkerData} markerData
    * @memberof MarkerLayer
    */
-  addMarker(coordinate: Lnglat, markerID: string, imgUrl: string = "") {
+  addMarker(coordinate: Coordinate, markerData: MarkerData) {
+    const marker = new Feature({
+      geometry: new Point(coordinate),
+      ...markerData,
+    });
+    // 设置标记要素的样式
+    marker.setStyle(
+      markerData.imgUrl.normal
+        ? this.setImage(markerData.imgUrl.normal)
+        : this.getStyle()
+    );
+    this.markerList.push(marker);
+    this.layer?.getSource()?.addFeature(marker);
+  }
+  /**
+   *更改标记点的位置icon和ID
+   *
+   * @param {Lnglat} coordinate 标记点新坐标
+   * @param {string} markerID 标记点新ID
+   * @param {string} [imgUrl=""] 标记点新icon
+   * @memberof MarkerLayer
+   */
+  changeMarker(
+    coordinate: Lnglat,
+    markerID: string,
+    imgUrl: string = "/public/vite.svg"
+  ) {
     const marker = new Feature({ geometry: new Point(coordinate), markerID });
     // 设置标记要素的样式
     marker.setStyle(imgUrl ? this.setImage(imgUrl) : this.getStyle());
-    this.#markers.push(marker);
+    this.markerList = [marker];
     this.layer?.getSource()?.clear();
     this.layer?.getSource()?.addFeature(marker);
+  }
+  /**
+   *切换marker状态
+   *
+   * @param {Feature} feature
+   * @memberof MarkerLayer
+   */
+  toggleMarkerIcon(feature: Feature) {
+    const featureIconMap = MarkerIconMap[feature.get("type")];
+    const iconUrl = feature.get("selected")
+      ? featureIconMap.sel
+      : featureIconMap.normal;
+    feature.setStyle(
+      new Style({
+        image: new Icon({
+          src: iconUrl,
+        }),
+      })
+    );
   }
   /**
    *批量添加多个点位
@@ -87,7 +131,7 @@ class MarkerLayer {
    */
   batchAddMarker(coordList: Array<Coordinate>) {
     const featureList = this.getFeatures(coordList);
-    this.#markers = [...featureList];
+    this.markerList = [...featureList];
     this.layer?.getSource()?.clear();
     this.layer = new VectorLayer({
       properties: {
