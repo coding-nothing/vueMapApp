@@ -11,33 +11,14 @@ import CircleStyle from "ol/style/Circle";
 /**
  *提供框选功能
  *
- * @class Drag
+ * @class SelectBox
  */
-class Drag {
+class SelectBox {
   select: Select;
   dragBox: DragBox;
   dragFeatureList: Collection<Feature<Geometry>>;
   constructor(map: OlMap) {
-    this.select = new Select({
-      style: (feature) =>
-        new Style({
-          image: new CircleStyle({
-            radius: 10,
-            stroke: new Stroke({
-              color: "red",
-            }),
-            fill: new Fill({
-              color: "#3399CC",
-            }),
-          }),
-          text: new Text({
-            text: feature.get("features").length.toString(),
-            fill: new Fill({
-              color: "red",
-            }),
-          }),
-        }),
-    });
+    this.select = new Select();
     this.dragBox = new DragBox({
       condition: platformModifierKeyOnly,
     });
@@ -65,17 +46,25 @@ class Drag {
           worldExtent[2]
         );
         const extent = [left, boxExtent[1], right, boxExtent[3]];
-        const targetLayer = (map.getLayers()?.getArray() ?? [])
-          .filter((layer: any) => layer.get("layerID") === "clusterLayer")
-          .pop() as VectorLayer<Cluster>;
-        const boxFeatures = targetLayer
-          ?.getSource()
-          ?.getFeaturesInExtent(extent)
-          .filter(
-            (feature: Feature) =>
-              !this.dragFeatureList.getArray().includes(feature) &&
-              feature?.getGeometry()?.intersectsExtent(extent)
-          ) as Array<Feature>;
+        const targetLayerList = (map.getLayers()?.getArray() ?? []).filter(
+          (layer: any) => {
+            return layer.get("layerID") !== "tileLayer";
+          }
+        ) as VectorLayer<any>[];
+
+        let boxFeatures = [] as Feature[];
+        targetLayerList.forEach((targetLayer) => {
+          boxFeatures = boxFeatures.concat(
+            targetLayer
+              ?.getSource()
+              ?.getFeaturesInExtent(extent)
+              .filter(
+                (feature: Feature) =>
+                  !this.dragFeatureList.getArray().includes(feature) &&
+                  feature?.getGeometry()?.intersectsExtent(extent)
+              )
+          );
+        });
 
         // features that intersect the box geometry are added to the
         // collection of selected features
@@ -107,18 +96,13 @@ class Drag {
         } else {
           this.dragFeatureList.extend(boxFeatures);
         }
-        console.log(
-          `选点${this.dragFeatureList.getLength()}个：`,
-          this.dragFeatureList.getArray()
-        );
+        console.log(`选点${this.dragFeatureList.getLength()}个：`);
+        this.dragFeatureList.getArray().forEach((feature: Feature) => {
+          console.log(feature.get("name"));
+        });
       }
     });
-
-    // clear selection when drawing a new box and when clicking on the map
-    // this.dragBox.on("boxstart", () => {
-    //   this.dragFeatureList.clear();
-    // });
   }
 }
 
-export default Drag;
+export default SelectBox;

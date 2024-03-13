@@ -50,13 +50,14 @@ export const MarkerList = [
   { id: 49, type: "type1", name: "Element 49" },
   { id: 50, type: "type2", name: "Element 50" },
 ];
-export const MarkerIconMap = {
-  type1: {
-    normal: "/public/images/marker.svg",
-    sel: "/public/images/sel-marker.svg",
-  },
-  type2: {
-    normal: "/public/vite.svg",
-    sel: "/public/sel-vite.svg",
-  },
-};
+export const MarkerIconMap: { [key: string]: { normal: string; sel: string } } =
+  {
+    type1: {
+      normal: "/public/images/marker.svg",
+      sel: "/public/images/sel-marker.svg",
+    },
+    type2: {
+      normal: "/public/vite.svg",
+      sel: "/public/sel-vite.svg",
+    },
+  };

@@ -8,11 +8,10 @@ import { XYZ } from "ol/source";
 import TileLayer from "ol/layer/Tile";
 import { EventTypes } from "ol/Observable";
 import { Group } from "ol/layer";
+import { Vector as VectorLayer } from "ol/layer";
 import { Vector as VectorSource } from "ol/source";
-
-// import { DragAndDrop, defaults as defaultInteractions } from "ol/interaction";
-// import { GeoJSON } from "ol/format";
-import VectorImageLayer from "ol/layer/VectorImage";
+import { Draw, Interaction, Modify, Snap } from "ol/interaction";
+import AreaDrawer from "./AreaDrawer";
 /**
  *openLayers地图服务 使用GeoJson创建
  *默认添加标记点图层
@@ -22,30 +21,16 @@ class OLMap {
   map: OlMap;
   geoLayerMng: GeoLayer;
   eventListener: Map<string, Array<Function>>;
+  draw?: Draw;
+  snap?: Snap;
 
   constructor(elementRef: HTMLElement, isOnlineMap: Boolean = true) {
     this.geoLayerMng = new GeoLayer();
     this.eventListener = new Map();
-    // const dragAndDropInteraction = new DragAndDrop({
-    //   formatConstructors: [GeoJSON],
-    // });
     this.map = new OlMap({
-      // interactions: defaultInteractions().extend([dragAndDropInteraction]),
       target: elementRef,
       layers: [],
     });
-    // dragAndDropInteraction.on("addfeatures", (event) => {
-    //   console.log("drag feature");
-    //   const vectorSource = new VectorSource({
-    //     features: event.features as Feature[],
-    //   });
-    //   this.map.addLayer(
-    //     new VectorImageLayer({
-    //       source: vectorSource,
-    //     })
-    //   );
-    //   this.map.getView().fit(vectorSource.getExtent());
-    // });
     this.#setupMap(isOnlineMap);
   }
   // 使用高德在线瓦片
@@ -55,6 +40,7 @@ class OLMap {
       source: new XYZ({
         url: "https://webrd04.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}",
       }),
+      properties: { layerID: "tileLayer" },
     });
     this.map.addLayer(
       new Group({
@@ -96,6 +82,7 @@ class OLMap {
             coordinate[2] +
             ".png",
         }),
+        properties: { layerID: "tileLayer" },
       })
     );
   }
@@ -209,6 +196,15 @@ class OLMap {
   tranfromCoordinate(coordinate: any, targetProj: string) {
     const curProj = this.map.getView().getProjection();
     return transform(coordinate, curProj, targetProj);
+  }
+  switchDrawArea(open: boolean, drawer: AreaDrawer) {
+    if (open) {
+      this.map.addInteraction(drawer.draw);
+      this.map.addInteraction(drawer.snap);
+    } else {
+      this.map.removeInteraction(drawer.draw as Interaction);
+      this.map.removeInteraction(drawer.snap as Interaction);
+    }
   }
 }
 

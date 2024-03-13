@@ -15,14 +15,15 @@ import { MarkerIconMap } from "@/data/marker.ts";
  * @class MarkerLayer
  */
 class MarkerLayer {
-  layer: VectorLayer<any> | undefined;
+  layer: VectorLayer<any>;
   markerList: Array<Feature>;
-  constructor(layerID: string = "vectorLayer") {
+  constructor(layerID: string = "vectorLayer", zIndex: number) {
     this.layer = new VectorLayer({
       source: new VectorSource(),
       properties: {
         layerID,
       },
+      zIndex: zIndex,
     });
     this.markerList = [];
   }
@@ -117,6 +118,33 @@ class MarkerLayer {
       new Style({
         image: new Icon({
           src: iconUrl,
+        }),
+      })
+    );
+  }
+  toggleMarkerStyle(feature: Feature) {
+    const color = feature.get("selected") ? "red" : "blue";
+    const name = feature.get("name");
+    feature.setStyle(
+      new Style({
+        fill: new Fill({
+          color: "rgba(255, 255, 255, 0.5)",
+        }),
+        stroke: new Stroke({
+          color: color,
+          width: 2,
+        }),
+        // 添加文本
+        text: new Text({
+          text: name,
+          font: "12px Arial",
+          fill: new Fill({
+            color: "black",
+          }),
+          textAlign: "center",
+          textBaseline: "middle",
+          placement: "point",
+          overflow: true,
         }),
       })
     );
