@@ -1,16 +1,14 @@
-import { Feature, Map as OlMap, Overlay, View } from "ol";
+import { Map as OlMap, Overlay, View } from "ol";
 import { EPSG4326, MAP_DEFAULT_OPTIONS } from "@/config/mapConfig";
 import Select from "ol/interaction/Select";
-import { transform, transformExtent } from "ol/proj";
+import { transform } from "ol/proj";
 import GeoLayer from "@/hooks/olMap/geoLayer";
 import BaseLayer from "ol/layer/Base";
 import { XYZ } from "ol/source";
 import TileLayer from "ol/layer/Tile";
 import { EventTypes } from "ol/Observable";
 import { Group } from "ol/layer";
-import { Vector as VectorLayer } from "ol/layer";
-import { Vector as VectorSource } from "ol/source";
-import { Draw, Interaction, Modify, Snap } from "ol/interaction";
+import { Draw, Interaction, Snap } from "ol/interaction";
 import AreaDrawer from "./AreaDrawer";
 /**
  *openLayers地图服务 使用GeoJson创建

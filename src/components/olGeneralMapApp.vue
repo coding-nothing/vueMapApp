@@ -9,6 +9,8 @@ import Feature from "ol/Feature";
 import Drag from "@/hooks/olMap/drag";
 import { Interaction } from "ol/interaction";
 import SelectBox from "@/hooks/olMap/selectBox";
+import Overlay from "ol/Overlay.js";
+import myPop from "./myPop.vue";
 // 地图实例
 let map: OLMap;
 // 拖动实例
@@ -48,6 +50,16 @@ const toggleDrawArea = () => {
 onMounted(() => {
   map = new OLMap(mapApp.value, false);
   const mapInstance = map.map;
+  // 添加overlay
+  const overlay = new Overlay({
+    element: document.getElementById("pop"),
+    autoPan: {
+      animation: {
+        duration: 250,
+      },
+    },
+  });
+  mapInstance.addOverlay(overlay);
 
   selectBox = new SelectBox(mapInstance);
 
@@ -64,6 +76,8 @@ onMounted(() => {
   });
 
   map.initMapListener("click", (event: any) => {
+    const coordinate = event.coordinate;
+    overlay.setPosition(coordinate);
     let selectMap = true;
     let selectRes = false;
     const pixel = event.pixel;
@@ -150,6 +164,9 @@ onMounted(() => {
     </div>
     <div class="draw-btn">
       <el-button @click="toggleDrawArea">绘制热区</el-button>
+    </div>
+    <div id="pop">
+      <myPop />
     </div>
   </div>
 </template>
