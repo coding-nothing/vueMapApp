@@ -48,18 +48,8 @@ const toggleDrawArea = () => {
 };
 
 onMounted(() => {
-  map = new OLMap(mapApp.value, false);
+  map = new OLMap(mapApp.value, true);
   const mapInstance = map.map;
-  // 添加overlay
-  const overlay = new Overlay({
-    element: document.getElementById("pop"),
-    autoPan: {
-      animation: {
-        duration: 250,
-      },
-    },
-  });
-  mapInstance.addOverlay(overlay);
 
   selectBox = new SelectBox(mapInstance);
 
@@ -164,9 +154,6 @@ onMounted(() => {
     </div>
     <div class="draw-btn">
       <el-button @click="toggleDrawArea">绘制热区</el-button>
-    </div>
-    <div id="pop">
-      <myPop />
     </div>
   </div>
 </template>
